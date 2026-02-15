@@ -1,0 +1,931 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Document - AI Learning Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 5px solid #f5576c;
+        }
+        
+        .header h1 {
+            color: #f5576c;
+            font-size: 3.5em;
+            margin-bottom: 15px;
+        }
+        
+        .header .subtitle {
+            color: #f093fb;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+        
+        .header .meta {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+        
+        .section {
+            margin: 40px 0;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            color: #f5576c;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            padding-left: 20px;
+            border-left: 6px solid #f093fb;
+        }
+        
+        .section-number {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .content {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #f5576c;
+        }
+        
+        .content h3 {
+            color: #f5576c;
+            font-size: 1.6em;
+            margin: 25px 0 15px 0;
+        }
+        
+        .content h4 {
+            color: #f093fb;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+        }
+        
+        .content p {
+            color: #333;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .content ul, .content ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .content ul li, .content ol li {
+            color: #333;
+            font-size: 1.05em;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        
+        /* Architecture Diagram */
+        .arch-diagram {
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe6e9 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 3px solid #f5576c;
+        }
+        
+        .arch-layer {
+            background: white;
+            border: 3px solid #f093fb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .layer-label {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+        
+        .layer-title {
+            color: #f5576c;
+            font-size: 1.4em;
+            margin: 10px 0 15px 0;
+            text-align: center;
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .component-box {
+            background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #f093fb;
+            transition: all 0.3s;
+        }
+        
+        .component-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.2);
+        }
+        
+        .component-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .component-name {
+            color: #f5576c;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        
+        .component-desc {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+        
+        .arrow-down {
+            text-align: center;
+            font-size: 2.5em;
+            color: #f5576c;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);
+            border-left: 5px solid #f5576c;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        
+        .highlight-box h4 {
+            color: #f5576c;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+        
+        .highlight-box p {
+            color: #8a1a2f;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .code-comment {
+            color: #75715e;
+        }
+        
+        .code-keyword {
+            color: #f093fb;
+        }
+        
+        .code-string {
+            color: #e6db74;
+        }
+        
+        .code-function {
+            color: #66d9ef;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        table th {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tr:hover {
+            background: #fff5f7;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .tech-category {
+            background: white;
+            border: 3px solid #f093fb;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .tech-category h4 {
+            color: #f5576c;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .tech-category ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .tech-category ul li {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);
+            border-radius: 8px;
+            border-left: 4px solid #f5576c;
+        }
+        
+        .tech-category ul li strong {
+            color: #f5576c;
+        }
+        
+        .api-endpoint {
+            background: white;
+            border: 2px solid #f093fb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .method {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .endpoint-path {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .endpoint-desc {
+            color: #666;
+            margin-top: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 3px solid #f5576c;
+            color: #666;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏗️ Design Document</h1>
+            <p class="subtitle">AI-Powered Personalized Learning and Developer Productivity Assistant</p>
+    
+        </div>
+
+        <!-- Section 1: Document Overview -->
+        <div class="section">
+            <h2 class="section-title"><span class="section-number">1</span>Document Overview</h2>
+            <div class="content">
+                <h3>1.1 Purpose</h3>
+                <p>This document describes the technical design and architecture of the AI-Powered Personalized Learning and Developer Productivity Assistant. It serves as a blueprint for development, covering system architecture, component design, data models, APIs, and deployment strategy.</p>
+                
+                <h3>1.2 Audience</h3>
+                <ul>
+                    <li>Development Team</li>
+                    <li>Technical Architects</li>
+                    <li>DevOps Engineers</li>
+                    <li>QA Engineers</li>
+                    <li>Product Managers</li>
+                </ul>
+                
+                <h3>1.3 Scope</h3>
+                <div class="highlight-box">
+                    <p>This design document covers: High-level system architecture • Component-level design • Database schema and data models • API specifications • Technology stack • Security architecture • Deployment and infrastructure • Performance optimization strategies</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: System Architecture -->
+        <div class="section">
+            <h2 class="section-title"><span class="section-number">2</span>System Architecture</h2>
+            <div class="content">
+                <h3>2.1 Architecture Overview</h3>
+                <p>The system follows a <strong>microservices architecture</strong> with the following key principles:</p>
+                <ul>
+                    <li><strong>Separation of Concerns:</strong> Each service handles a specific domain</li>
+                    <li><strong>Scalability:</strong> Services can scale independently</li>
+                    <li><strong>Resilience:</strong> Failure in one service doesn't bring down the entire system</li>
+                    <li><strong>Technology Flexibility:</strong> Different services can use different tech stacks</li>
+                </ul>
+                
+                <h3>2.2 4-Tier Architecture Diagram</h3>
+            </div>
+            
+            <div class="arch-diagram">
+                <!-- Layer 1 -->
+                <div class="arch-layer">
+                    <div class="layer-label">LAYER 1 - CLIENT</div>
+                    <h4 class="layer-title">🌐 Client / Presentation Layer</h4>
+                    <div class="components-grid">
+                        <div class="component-box">
+                            <div class="component-icon">💻</div>
+                            <div class="component-name">Web Application</div>
+                            <div class="component-desc">React + TypeScript</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">📱</div>
+                            <div class="component-name">Mobile App</div>
+                            <div class="component-desc">React Native</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🖥️</div>
+                            <div class="component-name">Desktop App</div>
+                            <div class="component-desc">Electron</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="arrow-down">⬇️ HTTPS/REST API</div>
+                
+                <!-- Layer 2 -->
+                <div class="arch-layer">
+                    <div class="layer-label">LAYER 2 - APPLICATION</div>
+                    <h4 class="layer-title">⚙️ Application / API Layer</h4>
+                    <div class="components-grid">
+                        <div class="component-box">
+                            <div class="component-icon">🔌</div>
+                            <div class="component-name">API Gateway</div>
+                            <div class="component-desc">Node.js + Express</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">👤</div>
+                            <div class="component-name">User Service</div>
+                            <div class="component-desc">Authentication & Profiles</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">📚</div>
+                            <div class="component-name">Content Service</div>
+                            <div class="component-desc">Python + FastAPI</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🎯</div>
+                            <div class="component-name">Learning Path</div>
+                            <div class="component-desc">Python + Flask</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">💾</div>
+                            <div class="component-name">Knowledge Service</div>
+                            <div class="component-desc">Node.js + GraphQL</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">📊</div>
+                            <div class="component-name">Analytics Service</div>
+                            <div class="component-desc">Progress Tracking</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="arrow-down">⬇️ Internal API</div>
+                
+                <!-- Layer 3 -->
+                <div class="arch-layer">
+                    <div class="layer-label">LAYER 3 - AI/ML</div>
+                    <h4 class="layer-title">🤖 AI/ML Processing Layer</h4>
+                    <div class="components-grid">
+                        <div class="component-box">
+                            <div class="component-icon">🧠</div>
+                            <div class="component-name">NLP Engine</div>
+                            <div class="component-desc">GPT-4 / Claude</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🔍</div>
+                            <div class="component-name">Code Analyzer</div>
+                            <div class="component-desc">Tree-sitter + AST</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🎓</div>
+                            <div class="component-name">Personalization</div>
+                            <div class="component-desc">TensorFlow</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">📝</div>
+                            <div class="component-name">Summarization</div>
+                            <div class="component-desc">BART / T5 Model</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🐛</div>
+                            <div class="component-name">Error Diagnosis</div>
+                            <div class="component-desc">Custom ML Models</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🔮</div>
+                            <div class="component-name">Recommendation</div>
+                            <div class="component-desc">Collaborative Filtering</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="arrow-down">⬇️ Data Access</div>
+                
+                <!-- Layer 4 -->
+                <div class="arch-layer">
+                    <div class="layer-label">LAYER 4 - DATA</div>
+                    <h4 class="layer-title">🗄️ Data Storage Layer</h4>
+                    <div class="components-grid">
+                        <div class="component-box">
+                            <div class="component-icon">🐘</div>
+                            <div class="component-name">PostgreSQL</div>
+                            <div class="component-desc">User Data & Auth</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🍃</div>
+                            <div class="component-name">MongoDB</div>
+                            <div class="component-desc">Learning Content</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">⚡</div>
+                            <div class="component-name">Redis</div>
+                            <div class="component-desc">Cache & Sessions</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🔎</div>
+                            <div class="component-name">Elasticsearch</div>
+                            <div class="component-desc">Full-text Search</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">🧲</div>
+                            <div class="component-name">Pinecone</div>
+                            <div class="component-desc">Vector Database</div>
+                        </div>
+                        <div class="component-box">
+                            <div class="component-icon">☁️</div>
+                            <div class="component-name">AWS S3</div>
+                            <div class="component-desc">Object Storage</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="highlight-box">
+                    <h4>⭐ Architecture Highlights</h4>
+                    <p><strong>Scalable:</strong> Each layer scales independently • <strong>Resilient:</strong> Microservices ensure high availability • <strong>Performance:</strong> Multi-layer caching delivers <200ms response times • <strong>Secure:</strong> End-to-end encryption with OAuth 2.0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Component Design -->
+        <div class="section">
+            <h2 class="section-title"><span class="section-number">3</span>Detailed Component Design</h2>
+            <div class="content">
+                <h3>3.1 Content Service (Python + FastAPI)</h3>
+                <p><strong>Responsibilities:</strong></p>
+                <ul>
+                    <li>Process AI explanation requests</li>
+                    <li>Code analysis and explanation</li>
+                    <li>Documentation summarization</li>
+                    <li>Error explanation and debugging help</li>
+                </ul>
+                
+                <h4>Example Code Structure:</h4>
+                <div class="code-block">
+<span class="code-comment"># content_service/main.py</span>
+<span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> FastAPI, HTTPException
+<span class="code-keyword">from</span> pydantic <span class="code-keyword">import</span> BaseModel
+<span class="code-keyword">import</span> openai
+
+app = FastAPI()
+
+<span class="code-keyword">class</span> <span class="code-function">ExplainRequest</span>(BaseModel):
+    concept: str
+    skill_level: str
+    context: str = None
+
+@app.post(<span class="code-string">"/explain"</span>)
+<span class="code-keyword">async def</span> <span class="code-function">explain_concept</span>(request: ExplainRequest):
+    <span class="code-keyword">try</span>:
+        <span class="code-comment"># Build prompt based on skill level</span>
+        prompt = build_explanation_prompt(
+            concept=request.concept,
+            skill_level=request.skill_level
+        )
+        
+        <span class="code-comment"># Call OpenAI API</span>
+        response = <span class="code-keyword">await</span> openai.ChatCompletion.create(
+            model=<span class="code-string">"gpt-4"</span>,
+            messages=[
+                {<span class="code-string">"role"</span>: <span class="code-string">"system"</span>, <span class="code-string">"content"</span>: <span class="code-string">"You are a helpful tutor"</span>},
+                {<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: prompt}
+            ]
+        )
+        
+        <span class="code-keyword">return</span> {<span class="code-string">"explanation"</span>: response.choices[0].message.content}
+    <span class="code-keyword">except</span> Exception as e:
+        <span class="code-keyword">raise</span> HTTPException(status_code=500, detail=str(e))
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Database Design -->
+        <div class="section">
+            <h2 class="section-title"><span class="section-number">4</span>Database Design</h2>
+            <div class="content">
+                <h3>4.1 PostgreSQL Schema (Relational Data)</h3>
+                <div class="code-block">
+<span class="code-comment">-- Users Table</span>
+<span class="code-keyword">CREATE TABLE</span> users (
+  id UUID <span class="code-keyword">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  email <span class="code-keyword">VARCHAR</span>(255) <span class="code-keyword">UNIQUE NOT NULL</span>,
+  password_hash <span class="code-keyword">VARCHAR</span>(255) <span class="code-keyword">NOT NULL</span>,
+  skill_level <span class="code-keyword">VARCHAR</span>(20) <span class="code-keyword">DEFAULT</span> <span class="code-string">'beginner'</span>,
+  subscription_tier <span class="code-keyword">VARCHAR</span>(20) <span class="code-keyword">DEFAULT</span> <span class="code-string">'free'</span>,
+  created_at <span class="code-keyword">TIMESTAMP DEFAULT NOW</span>()
+);
+
+<span class="code-comment">-- User Sessions Table</span>
+<span class="code-keyword">CREATE TABLE</span> user_sessions (
+  id UUID <span class="code-keyword">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  user_id UUID <span class="code-keyword">REFERENCES</span> users(id) <span class="code-keyword">ON DELETE CASCADE</span>,
+  token <span class="code-keyword">VARCHAR</span>(500) <span class="code-keyword">UNIQUE NOT NULL</span>,
+  expires_at <span class="code-keyword">TIMESTAMP NOT NULL</span>,
+  created_at <span class="code-keyword">TIMESTAMP DEFAULT NOW</span>()
+);
+                </div>
+                
+                <h3>4.2 MongoDB Schema (Document Data)</h3>
+                <div class="code-block">
+<span class="code-comment">// Learning Content Collection</span>
+{
+  <span class="code-string">"_id"</span>: ObjectId,
+  <span class="code-string">"user_id"</span>: <span class="code-string">"uuid"</span>,
+  <span class="code-string">"type"</span>: <span class="code-string">"explanation|code_analysis|summary"</span>,
+  <span class="code-string">"request"</span>: {
+    <span class="code-string">"content"</span>: <span class="code-string">"string"</span>,
+    <span class="code-string">"skill_level"</span>: <span class="code-string">"beginner|intermediate|advanced"</span>
+  },
+  <span class="code-string">"response"</span>: {
+    <span class="code-string">"content"</span>: <span class="code-string">"string"</span>,
+    <span class="code-string">"tokens_used"</span>: 500,
+    <span class="code-string">"model"</span>: <span class="code-string">"gpt-4"</span>
+  },
+  <span class="code-string">"created_at"</span>: ISODate
+}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: API Design -->
+        <div class="section">
+            <h2 class="section-title"><span class="section-number">5</span>API Design</h2>
+            <div class="content">
+                <h3>5.1 RESTful API Endpoints</h3>
+                
+                <h4>Authentication Endpoints</h4>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/auth/register</span>
+                    <div class="endpoint-desc">Register new user</div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/auth/login</span>
+                    <div class="endpoint-desc">User login and generate JWT token</div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/auth/logout</span>
+                    <div class="endpoint-desc">User logout and invalidate session</div>
+                </div>
+                
+                <h4>Learning Content Endpoints</h4>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/learn/explain</span>
+                    <div class="endpoint-desc">Get AI explanation for a concept</div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/learn/analyze-code</span>
+                    <div class="endpoint-desc">Analyze and explain code snippet</div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/learn/summarize</span>
+                    <div class="endpoint-desc">Summarize technical documentation</div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/learn/debug</span>
+                    <div class="endpoint-desc">Get help with error messages</div>
+                </div>
+                
+                <h4>Knowledge Base Endpoints</h4>
+                <div class="api-endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/v1/knowledge</span>
+                    <div class="endpoint-desc">Get all saved knowledge items</div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/knowledge</span>
+                    <div class="endpoint-desc">Save new knowledge item</div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span class="endpoint-path">/api/v1/knowledge/search</span>
+                    <div class="endpoint-desc">Search knowledge base with full-text query</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 6: Technology Stack -->
+        <div class="section">
+            <h2 class="section-title"><span class="section-number">6</span>Technology Stack</h2>
+            <div class="content">
+                <h3>6.1 Complete Stack Overview</h3>
+            </div>
+            
+            <div class="tech-stack">
+                <div class="tech-category">
+                    <h4>💻 Frontend</h4>
+                    <ul>
+                        <li><strong>React 18+</strong> - Web framework</li>
+                        <li><strong>TypeScript 5+</strong> - Type safety</li>
+                        <li><strong>React Native</strong> - Mobile apps</li>
+                        <li><strong>Electron</strong> - Desktop app</li>
+                        <li><strong>Tailwind CSS</strong> - Styling</li>
+                        <li><strong>Redux/Zustand</strong> - State management</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h4>⚙️ Backend</h4>
+                    <ul>
+                        <li><strong>Node.js 20 LTS</strong> - Runtime</li>
+                        <li><strong>Express.js</strong> - REST API</li>
+                        <li><strong>Python 3.11+</strong> - AI services</li>
+                        <li><strong>FastAPI</strong> - Python framework</li>
+                        <li><strong>Flask</strong> - Microservices</li>
+                        <li><strong>GraphQL</strong> - Flexible queries</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h4>🤖 AI/ML</h4>
+                    <ul>
+                        <li><strong>OpenAI GPT-4</strong> - Primary LLM</li>
+                        <li><strong>Anthropic Claude</strong> - Alternative LLM</li>
+                        <li><strong>TensorFlow</strong> - ML framework</li>
+                        <li><strong>PyTorch</strong> - Deep learning</li>
+                        <li><strong>LangChain</strong> - LLM orchestration</li>
+                        <li><strong>Hugging Face</strong> - Pre-trained models</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h4>🗄️ Databases</h4>
+                    <ul>
+                        <li><strong>PostgreSQL 16+</strong> - Relational DB</li>
+                        <li><strong>MongoDB 7+</strong> - Document DB</li>
+                        <li><strong>Redis 7.x</strong> - Caching</li>
+                        <li><strong>Elasticsearch 8.x</strong> - Search</li>
+                        <li><strong>Pinecone</strong> - Vector DB</li>
+                        <li><strong>AWS S3</strong> - Object storage</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h4>☁️ Cloud/DevOps</h4>
+                    <ul>
+                        <li><strong>AWS/GCP</strong> - Cloud platform</li>
+                        <li><strong>Docker</strong> - Containers</li>
+                        <li><strong>Kubernetes</strong> - Orchestration</li>
+                        <li><strong>Terraform</strong> - Infrastructure as Code</li>
+                        <li><strong>GitHub Actions</strong> - CI/CD</li>
+                        <li><strong>Prometheus</strong> - Monitoring</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h4>🔧 External Services</h4>
+                    <ul>
+                        <li><strong>Auth0</strong> - Authentication</li>
+                        <li><strong>Stripe</strong> - Payments</li>
+                        <li><strong>SendGrid</strong> - Email</li>
+                        <li><strong>CloudFlare</strong> - CDN</li>
+                        <li><strong>Datadog</strong> - APM</li>
+                        <li><strong>Sentry</strong> - Error tracking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 7: Security Architecture -->
+        <div class="section">
+            <h2 class="section-title"><span class="section-number">7</span>Security Architecture</h2>
+            <div class="content">
+                <h3>7.1 Authentication & Authorization</h3>
+                <p><strong>JWT Token Structure:</strong></p>
+                <div class="code-block">
+{
+  <span class="code-string">"header"</span>: {
+    <span class="code-string">"alg"</span>: <span class="code-string">"RS256"</span>,
+    <span class="code-string">"typ"</span>: <span class="code-string">"JWT"</span>
+  },
+  <span class="code-string">"payload"</span>: {
+    <span class="code-string">"user_id"</span>: <span class="code-string">"uuid"</span>,
+    <span class="code-string">"email"</span>: <span class="code-string">"user@example.com"</span>,
+    <span class="code-string">"skill_level"</span>: <span class="code-string">"intermediate"</span>,
+    <span class="code-string">"tier"</span>: <span class="code-string">"pro"</span>,
+    <span class="code-string">"exp"</span>: 1640000900
+  }
+}
+                </div>
+                
+                <h3>7.2 Data Security</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Security Layer</th>
+                            <th>Implementation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Data in Transit</strong></td>
+                            <td>TLS 1.3 encryption for all API calls</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data at Rest</strong></td>
+                            <td>AES-256 encryption for sensitive data</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Password Storage</strong></td>
+                            <td>Bcrypt hashing with cost factor 12</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Keys</strong></td>
+                            <td>Encrypted storage, never in code</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Session Management</strong></td>
+                            <td>Secure httpOnly cookies with short expiry</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section 8: Deployment -->
+        <div class="section">
+            <h2 class="section-title"><span class="section-number">8</span>Deployment Architecture</h2>
+            <div class="content">
+                <h3>8.1 Cloud Infrastructure</h3>
+                <p><strong>Kubernetes-based Deployment on AWS/GCP:</strong></p>
+                <ul>
+                    <li><strong>Compute:</strong> EKS/GKE cluster with auto-scaling node groups</li>
+                    <li><strong>Load Balancing:</strong> Application Load Balancer with health checks</li>
+                    <li><strong>Database:</strong> Managed RDS (PostgreSQL), MongoDB Atlas</li>
+                    <li><strong>Caching:</strong> ElastiCache (Redis) for session and data caching</li>
+                    <li><strong>Storage:</strong> S3 for static assets and user uploads</li>
+                    <li><strong>CDN:</strong> CloudFlare for global content delivery</li>
+                </ul>
+                
+                <h3>8.2 CI/CD Pipeline</h3>
+                <div class="highlight-box">
+                    <h4>Automated Pipeline Stages</h4>
+                    <p><strong>1. Code Commit</strong> → GitHub repository<br>
+                    <strong>2. Build</strong> → Docker image creation<br>
+                    <strong>3. Test</strong> → Unit tests + Integration tests<br>
+                    <strong>4. Security Scan</strong> → Vulnerability assessment<br>
+                    <strong>5. Deploy Staging</strong> → Automated staging deployment<br>
+                    <strong>6. Deploy Production</strong> → Manual approval + Production deployment</p>
+                </div>
+                
+                <h3>8.3 Monitoring & Observability</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Prometheus</strong></td>
+                            <td>Metrics collection and alerting</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Grafana</strong></td>
+                            <td>Metrics visualization dashboards</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Datadog</strong></td>
+                            <td>APM and infrastructure monitoring</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ELK Stack</strong></td>
+                            <td>Centralized logging (Elasticsearch, Logstash, Kibana)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sentry</strong></td>
+                            <td>Real-time error tracking and debugging</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+                   <p style="margin-top: 10px;"><strong>Prepared By:</strong> AI Learning Assistant Team | <strong>Reviewed By:</strong> Technical Lead</p>
+            <p><strong>AI for Bharat Hackathon 2026</strong></p>
+        </div>
+    </div>
+</body>
+</html>
