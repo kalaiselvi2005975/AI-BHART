@@ -4,7 +4,7 @@ Team Name: AI Innovators
 Team Leader: KALAISELVI .M
 
 1. Problem Statement
-Learners and developers struggle to efficiently understand complex technical concepts, codebases, and documentation due to the lack of personalized, contextual, and adaptive learning support.
+Learners and deelopers struggle to efficiently understand complex technical concepts, codebases, and documentation due to the lack of personalized, contextual, and adaptive learning support.
 
 2. Project Vision
 To create an inclusive, AI-driven learning ecosystem that empowers students and developers across India by breaking down barriers of cost, access, and complexity in technical education.
